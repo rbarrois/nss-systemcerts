@@ -49,4 +49,6 @@ LICENSE
 This software is distributes under the MIT license. A copy is included in the package.
 It was originally written by Raphaël Barrois.
 
+Source code is available at https://github.com/rbarrois/nss-systemcerts.
+
 .. vim:set ft=rst:
