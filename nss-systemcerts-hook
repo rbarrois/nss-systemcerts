@@ -1,0 +1,83 @@
+#!/bin/bash
+# Copyright (c) 2012 Raphaël Barrois
+#
+# License: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+# 
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+TRUST_OPTS="C,C,C"
+DISTRUST_OPTS="p,p,"
+
+NSS_DB="/etc/pki/nssdb"
+
+CERTUTIL_BIN="/usr/bin/certutil"
+SYS_CERT_REPO="/usr/share/ca-certificates"
+
+function usage()
+{
+    local retcode;
+    retcode=$1;
+    echo -e "Usage: $0 [options]
+
+    Read a list of certificate changes from stdin and apply them to ${NSS_DB}.
+"
+    exit $retcode;
+}
+
+function die_with_message()
+{
+    local message;
+    local exitcode;
+    exitcode=$1;
+    message="$2";
+    echo "Error: ${message}" >&2;
+    exit ${exitcode};
+}
+
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        "-h"|"--help")
+            usage 0;;
+        *)
+            die_with_message 1 "Unknown option $1."
+    esac
+    shift;
+done
+
+NSS_DB_STRING="sql:${NSS_DB}"
+
+if ! ${CERTUTIL_BIN} -L -d "${NSS_DB_STRING}" > /dev/null 2>&1; then
+    die_with_message 2 "No NSS database exists at ${NSS_DB}."
+fi
+
+while read line; do
+  action=$(echo $line | cut -c 1)
+  cert=$(echo $line | cut -c 2-)
+  case $action in
+    +)
+      ${CERTUTIL_BIN} -A -d "${NSS_DB_STRING}" -n $(basename "${cert}") -t "${TRUST_OPTS}" -i "${SYS_CERT_REPO}/${cert}";;
+    -)
+      ${CERTUTIL_BIN} -E -d "${NSS_DB_STRING}" -n $(basename "${cert}") -t "${DISTRUST_OPTS}";;
+    *)
+      die_with_message 3 "Invalid line ${line}.";;
+  esac
+done
