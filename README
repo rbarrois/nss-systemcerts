@@ -9,10 +9,12 @@ Background
 ----------
 
 NSS has a much wider set of features than the system-wide trusted certificates whitelist:
+
 - Trusting a certificate for various uses (server authentication, email signing, ...)
 - Distrusting a certificate trusted by another source (e.g user database removing system-wide defaults)
 
 It can also work with both user-specific and system-wide databases.
+
 - The system-wide is expected to be in ``/etc/pki/nssdb``
 - The user-specific db lives in ``$HOME/.pki/nssdb``
 
@@ -21,6 +23,7 @@ Purpose
 
 The system-wide NSS database has no relation with the system-wide certificate store.
 This tool tries to bridge that gap, by permitting:
+
 - Initialization of the system-wide NSS database
 - Updating the system-wide NSS database whenever a new certificate is added to the system-wide store
 - Listing differences between both databases.
