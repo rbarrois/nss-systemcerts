@@ -128,7 +128,7 @@ fi
 
 # Create database
 run mkdir -p ${NSS_DB}
-run ${CERTUTIL_BIN} -N -d ${NSS_DB}
+run ${CERTUTIL_BIN} -N -d ${NSS_DB_STRING}
 
 # Handle "accepted" certificates
 egrep -v '^(#|!|$)' "${CERT_STORE}" | while read cert; do
