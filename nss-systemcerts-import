@@ -129,6 +129,8 @@ fi
 # Create database
 run mkdir -p ${NSS_DB}
 run ${CERTUTIL_BIN} -N -d ${NSS_DB_STRING}
+# Make sure the NSS database can be read by all users
+run chmod a+r ${NSS_DB}/*
 
 # Handle "accepted" certificates
 egrep -v '^(#|!|$)' "${CERT_STORE}" | while read cert; do
