@@ -29,7 +29,6 @@ DISTRUST_OPTS="p,p,"
 NSS_DB="/etc/pki/nssdb"
 
 CERTUTIL_BIN="/usr/bin/certutil"
-SYS_CERT_REPO="/usr/share/ca-certificates"
 
 function usage()
 {
@@ -74,7 +73,7 @@ while read line; do
   cert=$(echo $line | cut -c 2-)
   case $action in
     +)
-      ${CERTUTIL_BIN} -A -d "${NSS_DB_STRING}" -n $(basename "${cert}") -t "${TRUST_OPTS}" -i "${SYS_CERT_REPO}/${cert}";;
+      ${CERTUTIL_BIN} -A -d "${NSS_DB_STRING}" -n $(basename "${cert}") -t "${TRUST_OPTS}" -i "${cert}";;
     -)
       ${CERTUTIL_BIN} -E -d "${NSS_DB_STRING}" -n $(basename "${cert}") -t "${DISTRUST_OPTS}";;
     *)
