@@ -11,10 +11,10 @@
 # distribute, sublicense, and/or sell copies of the Software, and to
 # permit persons to whom the Software is furnished to do so, subject to
 # the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 # MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -139,5 +139,9 @@ done
 
 # Handle "rejected" certificates
 grep "^!" "${CERT_STORE}" | sed 's/^!//' | while read cert; do
+    if [ ! -f "${SYS_CERT_REPO}/${cert}" ]; then
+        echo "Distrusted certificate '${SYS_CERT_REPO}/${cert}' does not exist. Skipping..."
+        continue
+    fi
     run "${CERTUTIL_BIN}" -A -d "${NSS_DB_STRING}" -n $(basename "${cert}") -t "${DISTRUST_OPTS}" -i "${SYS_CERT_REPO}/${cert}"
 done
