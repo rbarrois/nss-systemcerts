@@ -35,6 +35,7 @@ CERTUTIL_BIN="/usr/bin/certutil"
 
 # Path to system-wide certificate repository
 SYS_CERT_REPO="/usr/share/ca-certificates"
+USER_CERT_REPO="/usr/local/share/ca-certificates"
 
 # certutil options when adding certificates
 TRUST_OPTS="C,C,C"
@@ -135,6 +136,12 @@ run chmod a+r ${NSS_DB}/*
 # Handle "accepted" certificates
 egrep -v '^(#|!|$)' "${CERT_STORE}" | while read cert; do
     run "${CERTUTIL_BIN}" -A -d "${NSS_DB_STRING}" -n $(basename "${cert}") -t "${TRUST_OPTS}" -i "${SYS_CERT_REPO}/${cert}"
+done
+
+# Handle "user-added" certificates
+shopt -s globstar
+for cert in ${USER_CERT_REPO}/**/*.crt; do # Whitespace-safe and recursive
+    run "${CERTUTIL_BIN}" -A -d "${NSS_DB_STRING}" -n $(basename "${cert}") -t "${TRUST_OPTS}" -i "${cert}"
 done
 
 # Handle "rejected" certificates
