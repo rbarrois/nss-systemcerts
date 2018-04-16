@@ -128,7 +128,7 @@ fi
 
 # Create database
 run mkdir -p ${NSS_DB}
-run ${CERTUTIL_BIN} -N -d ${NSS_DB_STRING}
+run ${CERTUTIL_BIN} -N -d ${NSS_DB_STRING} --empty-password
 # Make sure the NSS database can be read by all users
 run chmod a+r ${NSS_DB}/*
 
